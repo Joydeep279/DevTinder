@@ -3,10 +3,8 @@ const app = express();
 
 app.get("/user", (req, res) => {
   if (req.headers["user-agent"].includes("Postman")) {
-    //request from postman
     res.send({ Fname: "Joydeep", Lname: "Nath" });
   } else {
-    //request from other Apps
     res.send("<h1>Welcome Joydeep Nath</h1>");
   }
 });
@@ -15,15 +13,26 @@ app.get("/test", (req, res) => {
   res.send("Welcome to test Page");
 });
 
+app.post("/user", (req, res) => {
+  res.send("Send to server Successfully");
+});
+
+app.delete("/user", (req, res) => {
+  res.send("Delete Request Recieved");
+});
+
+app.patch("/user", (req, res) => {
+  res.send("Patched!");
+});
+
 app.use("/", (req, res) => {
   if (req.headers["user-agent"].includes("Postman")) {
-    //request from postman
-    res.send({ status: "Success" });
+    res.send({ status: "No Route Found" });
   } else {
-    //request from other Apps
-    res.send("<h1>Welcome Joydeep Nath</h1>");
+    res.send("<h1>No Route Found</h1>");
   }
 });
+
 app.listen(3000, () => {
   console.log("Server Started SuccessFully!");
 });
