@@ -1,44 +1,36 @@
 const express = require("express");
 const app = express();
+const authArray = require("./middlewares/auth");
 
-app.get("/abc/:userID", (req, res) => {
-  console.log(req.params.userID);
+app.use("/data", authArray[0]);
 
-  res.send("Regex Worked!");
+app.get("/data/100", (req, res) => {
+  res.send({
+    Fname: "Joydeep",
+    Lname: "Nath",
+    age: 20,
+    email: "joydeepnath279@gmail.com",
+    password: "5d41402abc4b2a76b9719d911017c592",
+  });
+});
+app.post("/data/100", (req, res) => {
+  res.send("data Injected!");
 });
 
-app.get("/user", (req, res) => {
-  if (req.headers["user-agent"].includes("Postman")) {
-    res.send({ Fname: "Joydeep", Lname: "Nath" });
-  } else {
-    res.send("<h1>Welcome Joydeep Nath</h1>");
-  }
+app.use("/login", authArray[1]);
+
+app.post("/login", (req, res) => {
+  res.send("POST:Logged IN");
 });
 
-app.get("/test", (req, res) => {
-  res.send("Welcome to test Page");
-});
-
-app.post("/user", (req, res) => {
-  res.send("Send to server Successfully");
-});
-
-app.delete("/user", (req, res) => {
-  res.send("Delete Request Recieved");
-});
-
-app.patch("/user", (req, res) => {
-  res.send("Patched!");
+app.get("/login", (req, res) => {
+  res.send("GET:Logged IN");
 });
 
 app.use("/", (req, res) => {
-  if (req.headers["user-agent"].includes("Postman")) {
-    res.send({ status: "No Route Found" });
-  } else {
-    res.send("<h1>No Route Found</h1>");
-  }
+  res.status(404).send("Bad Request No Route Found!");
 });
 
 app.listen(3000, () => {
-  console.log("Server Started SuccessFully!");
+  console.log("Server Started Successfully!");
 });
