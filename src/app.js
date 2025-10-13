@@ -1,6 +1,12 @@
 const express = require("express");
 const app = express();
 
+app.get("/abc/:userID", (req, res) => {
+  console.log(req.params.userID);
+
+  res.send("Regex Worked!");
+});
+
 app.get("/user", (req, res) => {
   if (req.headers["user-agent"].includes("Postman")) {
     res.send({ Fname: "Joydeep", Lname: "Nath" });
