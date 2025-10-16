@@ -39,7 +39,6 @@ app.listen(3000, () => {
   console.log("Server Started Successfully!");
 });
 
-Explain how to code executes behind the scene
 
 ```
 
