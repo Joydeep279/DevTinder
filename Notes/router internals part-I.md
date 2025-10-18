@@ -1,3 +1,46 @@
+```javascript
+const express = require("express");
+const app = express();
+
+app.use(
+  "/user",
+  (req, res, next) => {
+    console.log("1st Route Handler");
+    next();
+  },
+  (req, res, next) => {
+    console.log("2nd Route Handler");
+    next();
+  },
+  (req, res, next) => {
+    console.log("3rd Route Handler");
+    next();
+  },
+  (req, res, next) => {
+    console.log("4th Route Handler");
+    next();
+  }
+);
+app.get("/user", (req, res) => {
+  res.send("you are on root");
+});
+app.get("/test", (req, res) => {
+  res.send("you are on test");
+});
+app.use("/", (req, res) => {
+  if (req.headers["user-agent"].includes("Postman")) {
+    res.send({ status: "No Route Found" });
+  } else {
+    res.send("<h1>No Route Found</h1>");
+  }
+});
+app.listen(3000, () => {
+  console.log("Server Started Successfully!");
+});
+```
+
+
+
 Of course. Let us analyze the internal mechanisms governing the Express.js routing system. The provided code snippet defines a series of routes, but the underlying implementation that stores and processes these routes is a sophisticated interplay of object-oriented design and a middleware pipeline, which is architecturally represented as a stack.
 
 ### 1. Concise Overview
@@ -52,7 +95,10 @@ function Layer(path, options, fn) {
 // Method to check if a request matches this layer's path
 Layer.prototype.match = function match(path) {
   // ... uses this.regexp.exec(path) to test the path
-};```
+};
+
+```
+
 When you define a route like `app.get("/test", ...)`, a `Layer` is created. This layer's job is to match the path `/test`. The actual handler function is stored in `this.handle`.
 
 #### The `Route` Class and Method Dispatching

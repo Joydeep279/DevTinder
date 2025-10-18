@@ -1,3 +1,13 @@
+```javascript
+const mongoose = require("mongoose");
+const connectString = require("../utils/constants");
+
+const connectDB = async () => {
+  await mongoose.connect(connectString);
+  console.log("Connected To DB");
+};
+module.exports.connectDB = connectDB;
+```
 # Deep System-Level Analysis: MongoDB Connection Orchestration via Mongoose ODM
 
 ---
@@ -8,13 +18,13 @@ Before we dissect the execution flow, let's establish the stratified architectur
 
 ```
 ┌─────────────────────────────────────────┐
-│   Application Layer (Your Code)        │
+│   Application Layer (Your Code)         │
 ├─────────────────────────────────────────┤
 │   Mongoose ODM (Object-Document Mapper) │
 ├─────────────────────────────────────────┤
 │   MongoDB Node.js Driver (Wire Protocol)│
 ├─────────────────────────────────────────┤
-│   Network Stack (TCP/IP, TLS)          │
+│   Network Stack (TCP/IP, TLS)           │
 ├─────────────────────────────────────────┤
 │   Operating System (Socket API)         │
 ├─────────────────────────────────────────┤
