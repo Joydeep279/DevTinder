@@ -1,38 +1,43 @@
-const http = require("http");
+const express = require("express");
+const app = express();
+// console.log("Script Started!");
 
-const server = http.createServer((req, res) => {
-  // We have to manually parse the URL and method
-  const { url, method } = req;
-
-  // Manually handle routing with a giant if/else block
-  if (url === "/" && method === "GET") {
-    res.writeHead(200, { "Content-Type": "text/plain" });
-    res.end("Welcome to the homepage!");
-  } else if (url === "/users" && method === "GET") {
-    res.writeHead(200, { "Content-Type": "application/json" });
-    const users = [
-      { id: 1, name: "Alice" },
-      { id: 2, name: "Bob" },
-    ];
-    res.end(JSON.stringify(users)); // Manually stringify JSON
-  } else if (url === "/submit" && method === "POST") {
-    // Manually handle incoming data "chunks"
-    let body = "";
-    req.on("data", (chunk) => {
-      body += chunk.toString();
-    });
-    req.on("end", () => {
-      console.log("Received data:", body);
-      res.writeHead(200, { "Content-Type": "text/plain" });
-      res.end("Data received!");
-    });
+app.use(
+  "/user",
+  (req, res, next) => {
+    console.log("1st Route Handler");
+    next();
+    console.log("After Next() 1");
+  },
+  (req, res, next) => {
+    console.log("2nd Route Handler");
+    next();
+    console.log("After Next() 2");
+  },
+  (req, res, next) => {
+    console.log("3rd Route Handler");
+    next();
+    console.log("After Next() 3");
+  },
+  (req, res, next) => {
+    console.log("4th Route Handler");
+    next();
+    console.log("After Next() 4");
+  }
+);
+app.get("/user", (req, res) => {
+  res.send("you are on root");
+});
+app.get("/test", (req, res) => {
+  res.send("you are on test");
+});
+app.use("/", (req, res) => {
+  if (req.headers["user-agent"].includes("Postman")) {
+    res.send({ status: "No Route Found" });
   } else {
-    // Manually handle 404 Not Found
-    res.writeHead(404, { "Content-Type": "text/plain" });
-    res.end("404 Not Found");
+    res.send("<h1>No Route Found</h1>");
   }
 });
-
-server.listen(3000, () => {
-  console.log("Server running on port 3000 with raw Node.js");
+app.listen(3000, () => {
+  console.log("Server Started Successfully!");
 });

@@ -2,16 +2,15 @@ const express = require("express");
 const app = express();
 const { connectDB } = require("./configs/database");
 const User = require("./configs/databaseSchema");
-
 app.use(express.json());
 
 app.post("/signup", async (req, res) => {
   try {
     const user = new User(req.body);
-    user.save();
+    await user.save();
     res.send("Data Saved Successfully");
   } catch (error) {
-    res.send("Error Occurred!!", error.message);
+    res.status(301).send("Error Occurred!!", error);
   }
 });
 
@@ -26,6 +25,16 @@ app.get("/user", async (req, res) => {
   } catch (error) {
     res.status(404).send("Error Collecting Data");
   }
+});
+
+app.patch("/signup", async (req, res, next) => {
+  try {
+    const document = await User.findByIdAndUpdate(
+      res.userID,
+      { age: 73 },
+      { runValidators }
+    );
+  } catch (error) {}
 });
 
 connectDB()
