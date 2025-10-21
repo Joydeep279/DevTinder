@@ -8,9 +8,9 @@ app.post("/signup", async (req, res) => {
   try {
     const user = new User(req.body);
     await user.save();
-    res.send("Data Saved Successfully");
+    res.status(201).send("Data Saved Successfully");
   } catch (error) {
-    res.status(301).send("Error Occurred!!", error);
+    res.status(403).send(error.message);
   }
 });
 
@@ -27,14 +27,21 @@ app.get("/user", async (req, res) => {
   }
 });
 
-app.patch("/signup", async (req, res, next) => {
+app.patch("/signup/:userID", async (req, res) => {
   try {
-    const document = await User.findByIdAndUpdate(
-      res.userID,
-      { age: 73 },
-      { runValidators }
+    const allowedUpdate = ["firstName", "lastName", "age", "gender"];
+    const isUpdateAllowed = Object.keys(req.body).every((keys) =>
+      allowedUpdate.includes(keys)
     );
-  } catch (error) {}
+    if (!isUpdateAllowed) {
+      res.status(403).send("Update not Allowed");
+    } else {
+      await User.findByIdAndUpdate(req.params.userID, req.body);
+      res.status(201).send("Success!");
+    }
+  } catch (error) {
+    res.status(400).send(error);
+  }
 });
 
 connectDB()
