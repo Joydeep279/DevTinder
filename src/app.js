@@ -2,11 +2,33 @@ const express = require("express");
 const app = express();
 const { connectDB } = require("./configs/database");
 const User = require("./configs/databaseSchema");
+const { signupValidator } = require("./middlewares/validator");
+const { compareSync } = require("bcrypt");
 app.use(express.json());
+
+app.get("/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const userData = await User.findOne({ email: email });
+
+    if (!userData) {
+      throw new Error("Wrong User Credentials");
+    } else {
+      if (compareSync(password, userData.password)) {
+        res.status(200).send("Login Successfull!");
+      } else {
+        res.status(400).send("Wrong User Credentials");
+      }
+    }
+  } catch (error) {
+    res.status(400).send(error);
+  }
+});
 
 app.post("/signup", async (req, res) => {
   try {
-    const user = new User(req.body);
+    const userCredentials = signupValidator(req.body);
+    const user = new User(userCredentials);
     await user.save();
     res.status(201).send("Data Saved Successfully");
   } catch (error) {
