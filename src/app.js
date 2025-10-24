@@ -4,7 +4,11 @@ const { connectDB } = require("./configs/database");
 const User = require("./configs/databaseSchema");
 const { signupValidator } = require("./middlewares/validator");
 const { compareSync } = require("bcrypt");
+const cookieParser = require("cookie-parser");
+const jwt = require("jsonwebtoken");
+
 app.use(express.json());
+app.use(cookieParser());
 
 app.get("/login", async (req, res) => {
   try {
@@ -15,6 +19,8 @@ app.get("/login", async (req, res) => {
       throw new Error("Wrong User Credentials");
     } else {
       if (compareSync(password, userData.password)) {
+        const token = jwt.sign({ email: userData.email }, "Joydeep@279");
+        res.cookie("token", token);
         res.status(200).send("Login Successfull!");
       } else {
         res.status(400).send("Wrong User Credentials");
@@ -38,11 +44,16 @@ app.post("/signup", async (req, res) => {
 
 app.get("/user", async (req, res) => {
   try {
-    const document = await User.findOne(req.body);
+    const decoded = jwt.verify(req.cookies.token, "Joydeep@279");
+
+    const document = await User.findOne({
+      email: decoded.email,
+    });
+
     if (!document) {
       res.status(404).send("Error Collecting Data");
     } else {
-      res.send(document);
+      res.send(document.firstName + " " + document.lastName);
     }
   } catch (error) {
     res.status(404).send("Error Collecting Data");

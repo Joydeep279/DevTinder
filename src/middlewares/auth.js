@@ -1,4 +1,3 @@
-
 function dataAuth(req, res, next) {
   const isAuthecated = true;
   const token = "5d41402abc4b2a76b9719d911017c592";
