@@ -6,6 +6,8 @@ const { signupValidator } = require("./middlewares/validator");
 const { compareSync } = require("bcrypt");
 const cookieParser = require("cookie-parser");
 const jwt = require("jsonwebtoken");
+const auth = require("./middlewares/auth");
+const { jwtPrivateKey } = require("./utils/constants");
 
 app.use(express.json());
 app.use(cookieParser());
@@ -19,15 +21,19 @@ app.get("/login", async (req, res) => {
       throw new Error("Wrong User Credentials");
     } else {
       if (compareSync(password, userData.password)) {
-        const token = jwt.sign({ email: userData.email }, "Joydeep@279");
-        res.cookie("token", token);
+        const token = jwt.sign({ _id: userData._id }, jwtPrivateKey, {
+          expiresIn: "7d",
+        });
+        res.cookie("token", token, {
+          expires: new Date(Date.now() + 168 * 3600000),
+        });
         res.status(200).send("Login Successfull!");
       } else {
         res.status(400).send("Wrong User Credentials");
       }
     }
   } catch (error) {
-    res.status(400).send(error);
+    res.status(400).send(error.message);
   }
 });
 
@@ -42,18 +48,12 @@ app.post("/signup", async (req, res) => {
   }
 });
 
-app.get("/user", async (req, res) => {
+app.get("/user", auth, (req, res) => {
   try {
-    const decoded = jwt.verify(req.cookies.token, "Joydeep@279");
-
-    const document = await User.findOne({
-      email: decoded.email,
-    });
-
-    if (!document) {
+    if (!req.userData) {
       res.status(404).send("Error Collecting Data");
     } else {
-      res.send(document.firstName + " " + document.lastName);
+      res.send(req.userData.firstName + " " + req.userData.lastName);
     }
   } catch (error) {
     res.status(404).send("Error Collecting Data");
@@ -73,7 +73,7 @@ app.patch("/signup/:userID", async (req, res) => {
       res.status(201).send("Success!");
     }
   } catch (error) {
-    res.status(400).send(error);
+    res.status(400).send(error.message);
   }
 });
 

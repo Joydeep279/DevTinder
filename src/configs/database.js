@@ -1,8 +1,8 @@
 const mongoose = require("mongoose");
-const connectString = require("../utils/constants");
+const { mongoString } = require("../utils/constants");
 
 const connectDB = async () => {
-  await mongoose.connect(connectString);
+  await mongoose.connect(mongoString);
   console.log("Connected To DB");
 };
 

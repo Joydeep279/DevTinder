@@ -1,20 +1,19 @@
-function dataAuth(req, res, next) {
-  const isAuthecated = true;
-  const token = "5d41402abc4b2a76b9719d911017c592";
-  const userToken = "5d41402abc4b2a76b9719d911017c592";
-  if (isAuthecated && token === userToken) {
-    next();
-  } else {
-    res.status(401).send("Access Denied");
-  }
-}
-function userAuth(req, res, next) {
-  const isAuthecated = true;
-  if (isAuthecated) {
-    next();
-  } else {
-    res.status(401).send("User Not Found");
-  }
-}
+const jwt = require("jsonwebtoken");
+const USER = require("../configs/databaseSchema");
+const { jwtPrivateKey } = require("../utils/constants");
 
-module.exports = [dataAuth, userAuth];
+async function auth(req, res, next) {
+  try {
+    const decoded = jwt.verify(req.cookies.token, jwtPrivateKey);
+    if (decoded) {
+      const userData = await USER.findById(decoded._id);
+      req.userData = userData;
+      next();
+    } else {
+      throw new Error("Invalid TOKEN!!");
+    }
+  } catch (error) {
+    throw new Error("Invalid TOKEN!!");
+  }
+}
+module.exports = auth;
