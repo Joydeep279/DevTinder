@@ -3,11 +3,8 @@ const app = express();
 const { connectDB } = require("./configs/database");
 const User = require("./configs/databaseSchema");
 const { signupValidator } = require("./middlewares/validator");
-const { compareSync } = require("bcrypt");
 const cookieParser = require("cookie-parser");
-const jwt = require("jsonwebtoken");
 const auth = require("./middlewares/auth");
-const { jwtPrivateKey } = require("./utils/constants");
 
 app.use(express.json());
 app.use(cookieParser());
@@ -20,10 +17,8 @@ app.get("/login", async (req, res) => {
     if (!userData) {
       throw new Error("Wrong User Credentials");
     } else {
-      if (compareSync(password, userData.password)) {
-        const token = jwt.sign({ _id: userData._id }, jwtPrivateKey, {
-          expiresIn: "7d",
-        });
+      if (userData.verifyPassword(password)) {
+        const token = userData.generateToken();
         res.cookie("token", token, {
           expires: new Date(Date.now() + 168 * 3600000),
         });
@@ -57,6 +52,14 @@ app.get("/user", auth, (req, res) => {
     }
   } catch (error) {
     res.status(404).send("Error Collecting Data");
+  }
+});
+
+app.get("/profile", auth, (req, res) => {
+  try {
+    res.send(req.userData);
+  } catch (error) {
+    res.send(error.message);
   }
 });
 

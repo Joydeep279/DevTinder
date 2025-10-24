@@ -1,5 +1,8 @@
 const mongoose = require("mongoose");
 const { isEmail, isURL, isStrongPassword } = require("validator");
+const { jwtPrivateKey } = require("../utils/constants");
+const jwt = require("jsonwebtoken");
+const { compareSync } = require("bcrypt");
 const userSchema = new mongoose.Schema(
   {
     firstName: {
@@ -21,11 +24,6 @@ const userSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      validate(value) {
-        if (!isStrongPassword(value)) {
-          throw new Error("Password too weak!");
-        }
-      },
     },
     age: {
       type: Number,
@@ -45,4 +43,14 @@ const userSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+userSchema.methods.generateToken = function () {
+  return jwt.sign({ _id: this._id }, jwtPrivateKey, {
+    expiresIn: "7d",
+  });
+};
+
+userSchema.methods.verifyPassword = function (inputPassword) {
+  return compareSync(inputPassword, this.password);
+};
+
 module.exports = mongoose.model("Users", userSchema);

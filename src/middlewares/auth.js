@@ -13,7 +13,8 @@ async function auth(req, res, next) {
       throw new Error("Invalid TOKEN!!");
     }
   } catch (error) {
-    throw new Error("Invalid TOKEN!!");
+    res.status(403).send(error.message);
   }
 }
+
 module.exports = auth;
