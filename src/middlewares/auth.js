@@ -6,8 +6,7 @@ async function auth(req, res, next) {
   try {
     const decoded = jwt.verify(req.cookies.token, jwtPrivateKey);
     if (decoded) {
-      const userData = await USER.findById(decoded._id);
-      req.userData = userData;
+      req.userData = await USER.findById(decoded._id);
       next();
     } else {
       throw new Error("Invalid TOKEN!!");
