@@ -3,6 +3,10 @@ const express = require("express");
 const route = express.Router();
 const User = require("../configs/databaseSchema");
 const { signupValidator } = require("../middlewares/validator");
+const auth = require("../middlewares/auth");
+const jwt = require("jsonwebtoken");
+const { jwtPrivateKey } = require("../utils/constants");
+const { hash } = require("bcrypt");
 route.get("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -42,6 +46,30 @@ route.get("/logout", async (req, res) => {
     res.clearCookie("token").send("Cookie Cleared");
   } catch (error) {
     throw new Error("Failed to LogOut");
+  }
+});
+
+route.patch("/change-password", auth, async (req, res) => {
+  try {
+    const { curPassword, newPassword } = req.body;
+    // retrieve userID from token
+    const { _id } = jwt.verify(req.cookies.token, jwtPrivateKey);
+
+    // get the userdetails
+
+    const user = await User.findById(_id);
+
+    if (user.verifyPassword(curPassword)) {
+      // compare  the current password with the stored(hashed form) one in the DB
+      const hashedPassword = await hash(newPassword, 10);
+
+      await User.findByIdAndUpdate(_id, { password: hashedPassword });
+      res.send("Password Change");
+    } else {
+      res.status(400).send("Invalid Password!");
+    }
+  } catch (error) {
+    res.status(400).send("Invalid Password");
   }
 });
 
