@@ -21,5 +21,5 @@ patch profile/password
 get/people
 post/accepted:userID
 post/rejected:userID
-post/blocked:userID
+post/not:userID
 ```

@@ -1,8 +1,8 @@
 const mongoose = require("mongoose");
-const { isEmail, isURL, isStrongPassword } = require("validator");
+const { isEmail, isURL } = require("validator");
 const { jwtPrivateKey } = require("../utils/constants");
 const jwt = require("jsonwebtoken");
-const { compareSync, compare } = require("bcrypt");
+const { compare } = require("bcrypt");
 const userSchema = new mongoose.Schema(
   {
     firstName: {
