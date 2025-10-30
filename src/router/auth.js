@@ -1,13 +1,12 @@
-//ts-worksheet
 const express = require("express");
-const route = express.Router();
+const router = express.Router();
 const User = require("../configs/databaseSchema");
 const { signupValidator } = require("../middlewares/validator");
 const auth = require("../middlewares/auth");
 const jwt = require("jsonwebtoken");
 const { jwtPrivateKey } = require("../utils/constants");
 const { hash } = require("bcrypt");
-route.get("/login", async (req, res) => {
+router.get("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
     const userData = await User.findOne({ email: email });
@@ -30,7 +29,7 @@ route.get("/login", async (req, res) => {
   }
 });
 
-route.post("/signup", async (req, res) => {
+router.post("/signup", async (req, res) => {
   try {
     const userCredentials = signupValidator(req.body);
     const user = new User(userCredentials);
@@ -41,7 +40,7 @@ route.post("/signup", async (req, res) => {
   }
 });
 
-route.get("/logout", async (req, res) => {
+router.get("/logout", async (req, res) => {
   try {
     res.clearCookie("token").send("Cookie Cleared");
   } catch (error) {
@@ -49,7 +48,7 @@ route.get("/logout", async (req, res) => {
   }
 });
 
-route.patch("/change-password", auth, async (req, res) => {
+router.patch("/change-password", auth, async (req, res) => {
   try {
     const { curPassword, newPassword } = req.body;
     // retrieve userID from token
@@ -73,4 +72,4 @@ route.patch("/change-password", auth, async (req, res) => {
   }
 });
 
-module.exports = route;
+module.exports = router;

@@ -1,4 +1,3 @@
-// ts-worksheet
 const express = require("express");
 const route = express.Router();
 const auth = require("../middlewares/auth");
