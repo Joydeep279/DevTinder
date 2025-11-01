@@ -20,11 +20,6 @@ router.post("/request/:status/:toUser", auth, async (req, res) => {
       return res.status(404).json({ error: "User does not exist" });
     }
 
-    // prevent self-request
-    if (toUser.toString() === fromUser.toString()) {
-      return res.status(400).json({ error: "Cannot send request to yourself" });
-    }
-
     // check for existing connection (both directions)
     const existingReq = await Connection.findOne({
       $or: [
@@ -64,8 +59,8 @@ router.post("/request/review/:status/:toUser", auth, async (req, res) => {
     if (!interestedDocument) {
       throw new Error("Invalid Request");
     }
-    const newConnection = new Connection({ toUser, fromUser, status });
-    await newConnection.save();
+    const newDocument = new Connection({ toUser, fromUser, status });
+    await newDocument.save();
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
