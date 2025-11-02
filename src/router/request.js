@@ -20,7 +20,6 @@ router.post("/request/:status/:toUser", auth, async (req, res) => {
       return res.status(404).json({ error: "User does not exist" });
     }
 
-    // check for existing connection (both directions)
     const existingReq = await Connection.findOne({
       $or: [
         { fromUser, toUser },
@@ -43,24 +42,27 @@ router.post("/request/:status/:toUser", auth, async (req, res) => {
 
 router.post("/request/review/:status/:toUser", auth, async (req, res) => {
   try {
-    const fromUser = req.userData._id;
+    const { _id } = req.userData;
     const { status, toUser } = req.params;
 
     const validStatus = ["accepted", "rejected"];
     if (!validStatus.includes(status)) {
       throw new Error("INVALID STATUS REQUEST");
     }
-    const interestedDocument = await Connection.findOne({
-      fromUser: fromUser,
-      toUser: toUser,
-      status: "interested",
-    });
+    const updatedConnection = await Connection.findOneAndUpdate(
+      {
+        fromUser: _id,
+        toUser: toUser,
+        status: "interested",
+      },
+      { $set: { status: "accepted" } },
+      { new: true }
+    );
 
-    if (!interestedDocument) {
+    if (!updatedConnection) {
       throw new Error("Invalid Request");
     }
-    const newDocument = new Connection({ toUser, fromUser, status });
-    await newDocument.save();
+    res.send("Request Send");
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

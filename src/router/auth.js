@@ -6,6 +6,7 @@ const auth = require("../middlewares/auth");
 const jwt = require("jsonwebtoken");
 const { jwtPrivateKey } = require("../utils/constants");
 const { hash } = require("bcrypt");
+
 router.get("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
