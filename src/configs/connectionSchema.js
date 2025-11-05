@@ -4,6 +4,7 @@ const connectionSchema = new mongoose.Schema(
   {
     fromUser: {
       type: mongoose.Schema.Types.ObjectId,
+      ref: "Users",
       required: true,
     },
     toUser: {
@@ -25,7 +26,7 @@ const connectionSchema = new mongoose.Schema(
 
 connectionSchema.pre("save", function (next) {
   if (this.toUser.equals(this.fromUser)) {
-    return next(new Error("Cannot send request to same user"));
+    return new Error("Cannot send request to same user");
   }
   next();
 });

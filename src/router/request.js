@@ -40,10 +40,10 @@ router.post("/request/:status/:toUser", auth, async (req, res) => {
   }
 });
 
-router.post("/request/review/:status/:toUser", auth, async (req, res) => {
+router.post("/request/review/:status/:fromUser", auth, async (req, res) => {
   try {
     const { _id } = req.userData;
-    const { status, toUser } = req.params;
+    const { status, fromUser } = req.params;
 
     const validStatus = ["accepted", "rejected"];
     if (!validStatus.includes(status)) {
@@ -51,8 +51,8 @@ router.post("/request/review/:status/:toUser", auth, async (req, res) => {
     }
     const updatedConnection = await Connection.findOneAndUpdate(
       {
-        fromUser: _id,
-        toUser: toUser,
+        toUser: _id,
+        fromUser: fromUser,
         status: "interested",
       },
       { $set: { status: "accepted" } },
