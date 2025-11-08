@@ -49,6 +49,7 @@ router.get("/feed", auth, async (req, res) => {
     const page = parseInt(req.params.page) || 1;
     const limit = parseInt(req.params.limit) || 10;
     const skipValue = (page - 1) * limit;
+    const newLimit = limit > 50 || limit < 0 ? 50 : limit;
 
     const hideUserList = await Connection.find({
       $or: [{ fromUser: _id }, { toUser: _id }],
@@ -63,7 +64,7 @@ router.get("/feed", auth, async (req, res) => {
     const feedUsers = await User.find({
       _id: { $nin: [...hideUsers, _id.toString()] },
     })
-      .limit(limit)
+      .limit(newLimit)
       .skip(skipValue);
 
     res.send(feedUsers);

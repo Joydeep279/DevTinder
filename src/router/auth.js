@@ -34,6 +34,8 @@ router.post("/signup", async (req, res) => {
   try {
     const userCredentials = signupValidator(req.body);
     const user = new User(userCredentials);
+    console.log(user);
+
     await user.save();
     res.status(201).send("Data Saved Successfully");
   } catch (error) {
