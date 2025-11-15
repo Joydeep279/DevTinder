@@ -7,7 +7,7 @@ const jwt = require("jsonwebtoken");
 const { jwtPrivateKey } = require("../utils/constants");
 const { hash } = require("bcrypt");
 
-router.get("/login", async (req, res) => {
+router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
     const userData = await User.findOne({ email: email });
@@ -20,7 +20,8 @@ router.get("/login", async (req, res) => {
         res.cookie("token", token, {
           expires: new Date(Date.now() + 168 * 3600000),
         });
-        res.status(200).send("Login Successfull!");
+        const { firstName, email, profileURL } = userData;
+        res.status(200).send({ firstName, email, profileURL });
       } else {
         res.status(400).send("Wrong User Credentials");
       }
