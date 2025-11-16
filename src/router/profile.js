@@ -6,7 +6,7 @@ route.get("/profile/view", auth, (req, res) => {
   try {
     res.send(req.userData);
   } catch (error) {
-    res.send(error.message);
+    res.status(403).send(error.message);
   }
 });
 
