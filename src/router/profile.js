@@ -20,12 +20,7 @@ route.patch("/profile/edit", auth, async (req, res) => {
     if (!isUpdateAllowed) {
       res.status(403).send("Update not Allowed");
     } else {
-      console.log(req.userData._id);
-
-      const userData = await User.findByIdAndUpdate(
-        req.userData._id,
-        req.body
-      );
+      const userData = await User.findByIdAndUpdate(req.userData._id, req.body);
       res.status(201).send({ userData });
     }
   } catch (error) {

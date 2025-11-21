@@ -20,8 +20,8 @@ router.post("/login", async (req, res) => {
         res.cookie("token", token, {
           expires: new Date(Date.now() + 168 * 3600000),
         });
-        const { firstName, email, profileURL } = userData;
-        res.status(200).send({ firstName, email, profileURL });
+        const { firstName,lastName, email, profileURL } = userData;
+        res.status(200).send({ firstName,lastName, email, profileURL });
       } else {
         res.status(400).send("Wrong User Credentials");
       }
@@ -35,10 +35,8 @@ router.post("/signup", async (req, res) => {
   try {
     const userCredentials = signupValidator(req.body);
     const user = new User(userCredentials);
-    console.log(user);
-
     await user.save();
-    res.status(201).send("Data Saved Successfully");
+    res.status(200).send(user);
   } catch (error) {
     res.status(403).send(error.message);
   }

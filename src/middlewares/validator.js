@@ -1,7 +1,7 @@
 const { isEmail, isStrongPassword } = require("validator");
 const { hashSync } = require("bcrypt");
-function  signupValidator(credentials) {
-  const { firstName, lastName, email, password } = credentials;
+function signupValidator(credentials) {
+  const { firstName, lastName, email, password, profileURL } = credentials;
   if (firstName.length < 4) {
     throw new Error("First Name is too Short");
   }
@@ -20,7 +20,7 @@ function  signupValidator(credentials) {
   if (!isStrongPassword(password)) {
     throw new Error("Password Not Valid");
   }
-  const hashedPassword =  hashSync(password, 10);
-  return { firstName, lastName, email, password: hashedPassword };
+  const hashedPassword = hashSync(password, 10);
+  return { firstName, lastName, email, profileURL, password: hashedPassword };
 }
 module.exports = { signupValidator };
