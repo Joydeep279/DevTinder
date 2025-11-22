@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const { isEmail, isURL } = require("validator");
 const { jwtPrivateKey } = require("../utils/constants");
 const jwt = require("jsonwebtoken");
-const { compare } = require("bcrypt");
+const { compare, compareSync } = require("bcrypt");
 const userSchema = new mongoose.Schema(
   {
     firstName: {
@@ -49,8 +49,8 @@ userSchema.methods.generateToken = function () {
   });
 };
 
-userSchema.methods.verifyPassword = async function (inputPassword) {
-  return compare(inputPassword, this.password);
+userSchema.methods.verifyPassword = function (inputPassword) {
+  return compareSync(inputPassword, this.password);
 };
 
 module.exports = mongoose.model("Users", userSchema);

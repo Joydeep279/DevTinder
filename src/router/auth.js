@@ -20,8 +20,8 @@ router.post("/login", async (req, res) => {
         res.cookie("token", token, {
           expires: new Date(Date.now() + 168 * 3600000),
         });
-        const { firstName,lastName, email, profileURL } = userData;
-        res.status(200).send({ firstName,lastName, email, profileURL });
+        const { firstName, lastName, email, profileURL } = userData;
+        res.status(200).send({ firstName, lastName, email, profileURL });
       } else {
         res.status(400).send("Wrong User Credentials");
       }
